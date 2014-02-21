@@ -21,7 +21,7 @@ class UsersController extends AppController {
  *
  * @var array
  */
-	public $components = array('Paginator', 'Session');
+	public $components = array('Paginator', 'Session', 'Payment');
 
 /**
  * index method
@@ -109,6 +109,28 @@ class UsersController extends AppController {
 		}
 		return $this->redirect(array('action' => 'index'));
 	}
+
+    /**
+     * 月額課金で会員登録する
+     */
+    public function regist() {
+        // チェック処理等は省略
+
+        $options = array();
+        $accountTimingKbn = Configure::read('ACCOUNT_TIMING_KBN');
+        $options['accountTiming'] = Configure::read('ACCOUNT_TIMING');
+        $firstAccountDate = date('Ymd');
+        $firstAmount = Configure::read('FIRST_AMOUNT');
+        $nextAmount = Configure::read('NEXT_AMOUNT');
+        $options['commodity'] = Configure::read('COMMODITY');
+        $memberAuthOkUrl = Configure::read('PAY_CERT_FOR_CONT_BILL_OK_URL');
+        $memberAuthNgUrl = Configure::read('PAY_CERT_FOR_CONT_BILL_NG_URL');
+
+        $result = $this->Payment->payCertForContBill($accountTimingKbn, $firstAccountDay, $firstAmount, $nextAmount, $memberAuthOkUrl,
+            $memberAuthNgUrl, $options);
+
+        return $result;
+    }
 
 /**
  * admin_index method
