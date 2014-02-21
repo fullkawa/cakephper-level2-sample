@@ -86,4 +86,13 @@ class User extends AppModel {
 			),
 		),
 	);
+
+	/**
+	 * 登録済ユーザを取得する
+	 */
+	public function getRegistedUsers() {
+	    $conditions = array('NOT' => array('registed' => null), 'canceled' => null);
+	    $users = $this->find('all', array('conditions' => $conditions));
+	    return $users;
+	}
 }
