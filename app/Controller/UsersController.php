@@ -120,7 +120,7 @@ class UsersController extends AppController {
         $accountTimingKbn = Configure::read('ACCOUNT_TIMING_KBN');
         $options['accountTiming'] = Configure::read('ACCOUNT_TIMING');
         $firstAccountDate = date('Ymd');
-        $firstAmount = Configure::read('FIRST_AMOUNT');
+        $firstAmount = $this->_getFirstAmount($this->Session->read('user'));
         $nextAmount = Configure::read('NEXT_AMOUNT');
         $options['commodity'] = Configure::read('COMMODITY');
         $memberAuthOkUrl = Configure::read('PAY_CERT_FOR_CONT_BILL_OK_URL');
@@ -130,6 +130,21 @@ class UsersController extends AppController {
             $memberAuthNgUrl, $options);
 
         return $result;
+    }
+
+    /**
+     * ユーザの種別に応じた初回金額を取得する
+     */
+    public function _getFirstAmount($user) {
+        $amount = Configure::read('FIRST_AMOUNT');
+
+        /*
+         * 招待ユーザ(type='invented')は初回無料
+         */
+        if ($user['type'] === 'invented') {
+            $amount = 0;
+        }
+        return $amount;
     }
 
 /**
