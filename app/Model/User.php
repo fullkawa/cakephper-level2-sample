@@ -95,4 +95,15 @@ class User extends AppModel {
 	    $users = $this->find('all', array('conditions' => $conditions));
 	    return $users;
 	}
+
+	/**
+	 * 登録中か？
+	 */
+	public function isRegisted($user) {
+	    $result = false;
+	    if ($user['User']['registed'] && empty($user['User']['canceled'])) {
+	        $result = true;
+	    }
+	    return $result;
+	}
 }
