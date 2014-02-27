@@ -25,7 +25,7 @@ Level1から2へレベルアップするために知っておくと良さそう�
 
 ### Controller
 
-* MVC原理主義的には、ビジネスロジックはModelに実装されるべきだが、Railsの流れを汲むフレームワークではControllerに実装される。
+* ビジネスロジックは、MVC原理主義的にはModelに実装されるべきだが、Railsの流れを汲むフレームワークではControllerに実装される。  
 参照→[『まつもと直伝　プログラミングのオキテ 第20回　MVCとRuby on Rails （7/7）』](http://itpro.nikkeibp.co.jp/article/COLUMN/20080610/307218/?ST=oss&P=7)
  * ```public function _methodName() { ...```と宣言することでブラウザから叩けないようにしつつ、UnitTestが可能になる。ここでビジネスロジックを実装する。
  * 使い回しができるロジックはComponent化(後述)する。
@@ -47,16 +47,15 @@ Level1から2へレベルアップするために知っておくと良さそう�
 
 * 呼ぶ側→Controller, 呼ばれる側→Model, View
 * NGなコードの例
- * Controllerで検索条件等を組み立てる。
- 修正例(1)→[Controller内でconditionsを組み立てるのではなく、Model側の(マジック)メソッドで適切なデータを取得する方式に変更し…](https://github.com/fullkawa/cakephper-level2-sample/commit/53353b7b6ce3974988cc441cdeae01bb01ed49e0)
- 望ましい実装例(2)→[登録済ユーザを取得するメソッドを追加しました。](https://github.com/fullkawa/cakephper-level2-sample/commit/5486e774429f5ca112aedad77acc15636679ed21)
-* 上記がNGな理由：アクションメソッドの行数が多くなる・その検索条件でどんなデータを取得しているのか補足(コメント)が必要
-・テストができない
+ * Controllerで検索条件等を組み立てる。  
+ 修正例(1)→[Controller内でconditionsを組み立てるのではなく、Model側の(マジック)メソッドで適切なデータを取得する方式に変更し…](https://github.com/fullkawa/cakephper-level2-sample/commit/53353b7b6ce3974988cc441cdeae01bb01ed49e0)  
+ 望ましい実装例(2)→[登録済ユーザを取得するメソッドを追加しました。](https://github.com/fullkawa/cakephper-level2-sample/commit/5486e774429f5ca112aedad77acc15636679ed21)  
+* 上記がNGな理由：アクションメソッドの行数が多くなる・その検索条件でどんなデータを取得しているのか補足(コメント)が必要・テストができない
 
 ### Model
 
 * メソッドのほとんどは「get～」という名称になるはず。
-* NG) 必要な情報を取得する。
+* NG) 必要な情報を取得する。  
 OK) 取得される(＆公開してよい)情報をすべて取得し、View側で取捨選択する。
 * 上記がNGな理由：再利用性が低くなる・View側に改修が入る度、Modelも改修が必要になる
 
@@ -67,7 +66,7 @@ OK) 取得される(＆公開してよい)情報をすべて取得し、View側�
  * HTMLタグを含むものはHelperへ。
  * データに関する操作(随時、税込金額を計算する場合など)はModel::afterFind()等で行う。
 * NGなコードの例
- * Viewで判定・表示状態の切替を行う。
+ * Viewで判定・表示状態の切替を行う。  
  修正例→["Delete"ボタン切り替えのロジックをHelperに移しました。](https://github.com/fullkawa/cakephper-level2-sample/commit/e068a83de48572d9b737b3cb8a44420d2af6416c)
 * 特定の画面だけで必要となるCSS/JavascriptはViewで定義する。
 ```
@@ -90,15 +89,15 @@ echo $this->Html->script(PATH_TO_JAVASCRIPT_FILE, array('inline' => false));
 
 #### Component
 
-* 使い回しができるロジックはComponentとして作成し、 *Component(＋設定ファイル)をコピーするだけで* 再利用できるようにする。
+* 使い回しができるロジックはComponentとして作成し、 *Component(＋設定ファイル)をコピーするだけで* 再利用できるようにする。  
 参照→[Component作成・利用の例](https://github.com/fullkawa/cakephper-level2-sample/commit/697d0bba63076adcbbdfd1a2085ea61ec7bd7b78)
- * 案件に依存する記述を *一切* 入れない。
- →処理に必要なパラメータはすべてComponent外部から渡しているため、他案件のシステムにコピーしてもComponentに修正は必要ない。
- →仕様書に記載されているまま実装しているため、仕様変更があった場合に修正箇所を特定しやすいというメリットもある。
- * 案件ごとに異なるパラメータを設定ファイルに持たせて、Controller側で読み込む。
- →確認・修正箇所をまとめることができる。
- →Controller側で読み込むことで、案件固有の処理(ユーザの種別によって金額が変わる等)を組み込む余地がある。
- 参照→[ユーザの種別に応じた初回金額を取得する処理を入れてみました。](https://github.com/fullkawa/cakephper-level2-sample/commit/de41ef004c1bbe150787436a8ace0e4ceecfb75c)
+ * 案件に依存する記述を *一切* 入れない。  
+ →処理に必要なパラメータはすべてComponent外部から渡しているため、他案件のシステムにコピーしてもComponentに修正は必要ない。  
+ →仕様書に記載されているまま実装しているため、仕様変更があった場合に修正箇所を特定しやすいというメリットもある。  
+ * 案件ごとに異なるパラメータを設定ファイルに持たせて、Controller側で読み込む。  
+ →確認・修正箇所をまとめることができる。  
+ →Controller側で読み込むことで、案件固有の処理(ユーザの種別によって金額が変わる等)を組み込む余地がある。  
+ 参照→[ユーザの種別に応じた初回金額を取得する処理を入れてみました。](https://github.com/fullkawa/cakephper-level2-sample/commit/de41ef004c1bbe150787436a8ace0e4ceecfb75c)  
 
 #### Helper
 
@@ -126,7 +125,7 @@ echo $this->Html->script(PATH_TO_JAVASCRIPT_FILE, array('inline' => false));
 ### 適切な名前を付ける
 
 * 大原則：一つの関数で一つの処理を行う。
-* “一つの処理”の内容を表す _過不足のない_ 言葉の選択が大事！
+* “一つの処理”の内容を表す _過不足のない_ 言葉の選択が大事！  
 →これができれば、関数の中身を読まなくてもよくなる。
 
 
@@ -134,16 +133,16 @@ echo $this->Html->script(PATH_TO_JAVASCRIPT_FILE, array('inline' => false));
 
 ### プログラムを書かない
 
-* プログラムを書くと必ず「時間(＝工数＝金)がかかる」「バグが生じる」。
+* プログラムを書くと必ず「時間(＝工数＝金)がかかる」「バグが生じる」。  
 →すでに同様のPluginほかが作成されていないか、まず確認！
 
 
 ### 書き換えないで済むコードを書く
 
 * 「呼ばれる側」のコードの話。
-* “不具合”は修正(書き換え)されるべき。
-しかし、“仕様変更”には、基本、新規追加で対応すべき。
-そして、「呼ぶ側」にて新たに追加されたメソッドを呼ぶよう修正する。
+* “不具合”は修正(書き換え)されるべき。  
+しかし、“仕様変更”には、基本、新規追加で対応すべき。  
+そして、「呼ぶ側」にて新たに追加されたメソッドを呼ぶよう修正する。  
 
 
 ### 処理を一本道にする
